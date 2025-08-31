@@ -68,7 +68,7 @@ export default function ModalFacility({
           ) : (
             facilities.map((f) => (
               <li
-                key={f._id}
+                key={f.code}
                 className="flex justify-between items-center py-2"
               >
                 <span className="font-medium text-gray-700">{f.name}</span>

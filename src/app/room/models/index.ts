@@ -6,6 +6,8 @@ export interface Facility {
   status: "B" | "P" | "R" | "T";
 }
 
+import { FacilityClient } from "@/app/facility/models";
+
 export interface Facilitys {
   _id: string;
   name: string;
@@ -21,7 +23,7 @@ export interface Room {
     name: string,
     code: string,
     price: number,
-    facility: Facility[],
+    facility: FacilityClient[],
     status: boolean,
     customer_key: string,
     report_id: string,

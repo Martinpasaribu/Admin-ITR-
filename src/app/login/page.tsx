@@ -20,7 +20,7 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      await api.post("api/v1/auth/login", form);
+      await api.post("/auth/login", form);
       router.push("/dashboard");
     } catch (err) {
       alert(`Login gagal! Periksa kembali ${err}`);

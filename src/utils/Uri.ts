@@ -1,0 +1,1 @@
+export const baseURL = 'https://server-itr.vercel.app/api/v1'

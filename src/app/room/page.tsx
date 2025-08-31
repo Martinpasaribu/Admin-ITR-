@@ -31,7 +31,7 @@ export default function RoomPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get("/api/v1/room");
+      const res = await api.get("/room");
       setRooms(res.data.data || []);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message);

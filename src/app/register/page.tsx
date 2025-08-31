@@ -28,7 +28,7 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
-      const res = await api.post("api/v1/user-admin/register", form);
+      const res = await api.post("/user-admin/register", form);
       // alert("Berhasil daftar!");
       showToast("success", `${res.data.message}`);
       router.push("/login");

@@ -1,4 +1,5 @@
 // lib/auth.ts
+import { baseURL } from "@/utils/Uri";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -18,7 +19,7 @@ interface UserProfile {
 }
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: baseURL,
   withCredentials: true,
 });
 
@@ -32,7 +33,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // coba refresh token
       try {
-        const { data } = await axios.get("http://localhost:5000/api/v1/auth/token", {
+        const { data } = await axios.get(`${baseURL}auth/token`, {
           withCredentials: true,
         });
         accessToken = data.accessToken;

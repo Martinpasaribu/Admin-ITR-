@@ -5,6 +5,13 @@ export interface Room {
   username: string
 }
 
+export interface duration {
+  days: number,
+  hour: number,
+  text: string
+}
+
+
 export interface Customer {
   _id: string;
   username: string
@@ -13,10 +20,13 @@ export interface Customer {
 
 export interface Report {
   _id: string | null | undefined;
+  report_code: string;
   customer_key?:  Customer; // bisa ObjectId (string) atau populated Customer
   report_type: "FK" | "FU" | "K";
   broken_type: "SP" | "R" | "SR";
   progress: "A" | "P" | "S" | "T";
+  progress_end: Date,
+  duration: duration,
   complain_des: string;
   broken_des: string;
   status: boolean;

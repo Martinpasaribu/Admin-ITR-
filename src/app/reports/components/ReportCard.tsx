@@ -3,6 +3,8 @@
 import { Report } from "../models";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
 import { Trash2, Pencil } from "lucide-react";
+import { FormatDate } from "../utils/Date";
+import { CalculateProgressDuration } from "../utils/TimeProgress";
 
 interface Props {
   report: Report;
@@ -15,6 +17,17 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
     <div className="relative group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition">
       <div className="space-y-1">
         <div className="flex flex-wrap gap-x-6 gap-y-2">
+          
+          {/* Kolom 1: ID */}
+          <div className="flex flex-col gap-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              No Laporan
+            </p>
+            <p className="text-sm font-semibold text-gray-900">
+              {report.report_code}
+            </p>
+          </div>
+
           <div className="space-y-3">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
               Tipe Report
@@ -70,6 +83,30 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
             >
               {Progress(report.progress).label}
             </span>
+          </div>
+
+          {/* Kolom 7: Laporan Masuk */}
+          <div className="flex flex-col gap-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Laporan Masuk
+            </p>
+            <p className="text-sm font-semibold text-gray-900">
+              {FormatDate(report.createdAt, "/")}
+            </p>
+          </div>
+
+          {/* Kolom 8: Lama Pengerjaan */}
+          <div className="flex flex-col gap-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Lama Pengerjaan
+            </p>
+
+            <p className="text-sm font-semibold text-gray-900">
+              {report && report.progress_end
+                ? CalculateProgressDuration(report.createdAt, report.progress_end)
+                : "-"}
+            </p>
+
           </div>
 
 

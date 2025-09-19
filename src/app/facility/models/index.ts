@@ -1,4 +1,5 @@
 export interface Facility {
+    _id: string;
     name: string,
     code: string,
     qty: number,

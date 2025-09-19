@@ -36,5 +36,6 @@ export interface CustomerClient {
   checkIn: string;
   bill_status: "lunas" | "belum_lunas" | "pembayaran";
   room_key:  string | number | readonly string[] | string [];
-  booking_status: "M" | "K" | "P" | "AK";
+  // booking_status: "M" | "K" | "P" | "AK";
+  booking_status: string
 }

@@ -120,7 +120,7 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
 
         {/* Facility input */}
         <div>
-          <h4 className="font-semibold mb-2 text-gray-700 ">Tambah Facility</h4>
+          <h4 className="font-semibold mb-2 text-gray-700 ">Facility</h4>
           <div className="flex flex-wrap gap-2 items-center">
             <select
               value={selectedFacilityCode}

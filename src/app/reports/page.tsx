@@ -12,6 +12,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useToast } from "@/components/ToastContect";
 import ConfirmDeleteModal from "@/components/ConfirmDeletedModal";
+import ReportTable from "./components/ReportTable";
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,8 @@ export default function ReportsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [deleteId, setDeleteId] = useState<{ _id: string } | null>(null);
+  const [viewMode, setViewMode] = useState<"card" | "table">("card");
+
 
   const { showToast } = useToast();
 
@@ -154,7 +157,7 @@ const handleDeleteReport = async () => {
         {/* 🔹 Satu input untuk mencari nama pelanggan atau kode kamar */}
         <input
           type="text"
-          placeholder="Cari Customer | Room"
+          placeholder="Cari Report | Customer | Room "
           className="border rounded-lg p-2 text-sm"
           value={filters.searchTerm}
           onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
@@ -249,11 +252,36 @@ const handleDeleteReport = async () => {
         </div>
       )}
 
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => setViewMode("card")}
+          className={`px-4 py-2 rounded-l-lg text-sm font-medium ${
+            viewMode === "card"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Card
+        </button>
+        <button
+          onClick={() => setViewMode("table")}
+          className={`px-4 py-2 rounded-r-lg text-sm font-medium ${
+            viewMode === "table"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Table
+        </button>
+      </div>
+
+
+      {/* Tampilan Data  */}
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : filteredReports.length === 0 ? (
         <p className="text-gray-500">Tidak ada laporan sesuai filter.</p>
-      ) : (
+      ) : viewMode === "card" ? (
         <div className="space-y-5">
           {filteredReports.map((r) => (
             <ReportCard
@@ -264,6 +292,12 @@ const handleDeleteReport = async () => {
             />
           ))}
         </div>
+      ) : (
+        <ReportTable
+          reports={filteredReports}
+          onEdit={openModal}
+          onDelete={(id) => setDeleteId({ _id: id })}
+        />
       )}
 
       {selectedReport && (

@@ -8,7 +8,7 @@ export const Progress = (status: string) => {
       };
     case "P":
       return {
-        label: "Di Proses",
+        label: "Sedang Diproses",
         className: "bg-yellow-100 text-yellow-700",
       };
     case "S":
@@ -18,7 +18,7 @@ export const Progress = (status: string) => {
       };
     case "T":
       return {
-        label: "Di Tolak",
+        label: "Ditolak",
         className: "bg-red-100 text-red-700",
       };
     default:

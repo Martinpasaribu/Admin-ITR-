@@ -12,8 +12,10 @@ export default function RegisterPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     user_id: "",
+    username: "",
     email: "",
     password: "",
+    role: "",
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +24,7 @@ export default function RegisterPage() {
    
   const handleRegister = async () => {
     if (!form.user_id || !form.email || !form.password) {
-      alert("Semua field wajib diisi!");
+      showToast("warning", `Semua field wajib diisi!`);
       return;
     }
 
@@ -53,7 +55,7 @@ export default function RegisterPage() {
         {/* Username */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-2">
-            User ID
+            User ID Admin
           </label>
           <input
             type="text"
@@ -61,6 +63,20 @@ export default function RegisterPage() {
             value={form.user_id}
             onChange={(e) =>
               setForm({ ...form, user_id: e.target.value })
+            }
+            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            placeholder="Masukkan username"
+            value={form.username}
+            onChange={(e) =>
+              setForm({ ...form, username: e.target.value })
             }
             className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           />
@@ -82,6 +98,25 @@ export default function RegisterPage() {
           />
         </div>
 
+        <div className="mb-4 text-gray-600">
+
+          <label className="block text-gray-700 font-medium mb-2">
+            Role
+          </label>
+
+          <select
+            className="w-full border rounded-lg p-2 mb-3"
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          >
+            <option value={"A"}>Admin</option>
+            <option value={"CA"}>Co Admin</option>
+            <option value={"SA"}>Super Admin</option>
+          </select>
+
+        </div>
+
+
         {/* Password */}
         <div className="mb-6 relative">
           <label className="block text-gray-700 font-medium mb-2">
@@ -99,32 +134,34 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-11 text-gray-500 hover:text-gray-700"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
 
+
+
         {/* Tombol Register */}
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Memproses..." : "Daftar"}
           {!loading && <UserPlus size={18} />}
         </button>
 
         {/* Footer */}
-        <p className="text-sm text-center text-gray-500 mt-6">
+        {/* <p className="text-sm text-center text-gray-500 mt-6">
           Sudah punya akun?{" "}
           <a
             href="/login"
-            className="text-indigo-600 hover:underline font-medium"
+            className="text-indigo-700 hover:underline font-medium"
           >
             Login di sini
           </a>
-        </p>
+        </p> */}
       </div>
     </div>
   );

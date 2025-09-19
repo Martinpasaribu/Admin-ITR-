@@ -144,82 +144,96 @@ export default function RoomPage() {
   return (
     <div className="min-h-screen p-6  mx-auto">
       {/* Header */}
-      <header className="flex justify-between items-center bg-white shadow rounded-xl px-6 py-4 mb-8">
+      <header className="flex justify-between items-center bg-white text-gray-800 shadow rounded-xl px-6 py-4 mb-8">
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Home size={24} /> Data Room
         </h1>
-        <div className="flex items-center gap-4">
-          <button
-            className="p-2 hover:bg-gray-100 rounded-full"
-            onClick={() => router.push("/settings")}
-          >
-            <Settings size={20} />
-          </button>
-          <button
-            className="p-2 hover:bg-gray-100 rounded-full"
-            onClick={() => router.push("/login")}
-          >
-            <LogOut size={20} />
-          </button>
-        </div>
-      </header>
 
-      {/* Greeting */}
-      <section className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-xl shadow p-6 mb-8">
-        <h2 className="text-lg font-semibold">Halo, Admin 👋</h2>
-        <p className="text-sm opacity-90">Kelola data kamar di sini</p>
-      </section>
+      </header>
 
       {/* Form tambah room */}
       <AddRoomForm onAdd={handleAddRoom} loading={loading} />
 
       {/* Table */}
-      <section className="bg-white rounded-xl shadow overflow-hidden">
+      <section className="bg-white rounded-xl shadow-md overflow-hidden mt-5">
         {error && (
           <p className="text-center text-red-600 p-4 font-semibold">{error}</p>
         )}
+
         <table className="w-full text-sm text-gray-700">
-          <thead className="bg-gray-100 border-b">
-            <tr>
+          <thead>
+            <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
               <th className="p-3 text-left">Kode Room</th>
               <th className="p-3 text-right">Harga</th>
+              <th className="p-3 text-center">Status</th>
               <th className="p-3 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {rooms.map((r) => (
-              <tr key={r._id} className="border-b hover:bg-gray-50">
-                <td className="p-3">{r.code}</td>
-                <td className="p-3 text-right">
+            {rooms.map((r, idx) => (
+              <tr
+                key={r._id}
+                className={`${
+                  idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } border-b last:border-none hover:bg-gray-100 transition`}
+              >
+                {/* Kode Room */}
+                <td className="p-3 font-medium text-gray-900">{r.code}</td>
+
+                {/* Harga */}
+                <td className="p-3 text-right font-semibold text-gray-800">
                   Rp {r.price.toLocaleString("id-ID")}
                 </td>
-                <td className="p-3 text-center flex justify-center gap-3">
-                  <button
-                    onClick={() => handleOpenFacilityModal(r._id)}
-                    className="px-3 py-1 text-blue-600 hover:text-blue-800"
-                  >
-                    <MonitorCheck  />
-                  </button>
-                  <button
-                    onClick={() => setDeleteId(r._id)}
-                    className="px-3 py-1 text-red-600 hover:text-red-800"
-                  >
-                    <Trash2  />
-                  </button>
 
-                  <button
-                    onClick={() => {
-                      setImageFacility(r);
-                      setShowImageModal(true);
-                    }}
-                    className="px-3 py-1  rounded text-gray-500"
-                  >
-                    <Image />
-                  </button>
-
+                {/* Status */}
+                <td className="p-3 text-center">
+                  {r.status ? (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                      Tersedia
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+                      Tidak Tersedia
+                    </span>
+                  )}
                 </td>
 
-    
+                {/* Aksi */}
+                <td className="p-3 text-center">
+                  <div className="flex justify-center gap-2">
+                    {/* Fasilitas */}
+                    <button
+                      onClick={() => handleOpenFacilityModal(r._id)}
+                      className="p-2 rounded-full border border-blue-200 text-blue-600 bg-white hover:bg-blue-50 hover:shadow-sm transition"
+                      title="Lihat Fasilitas"
+                    >
+                      <MonitorCheck size={18} />
+                    </button>
+
+                    {/* Hapus */}
+                    <button
+                      onClick={() => setDeleteId(r._id)}
+                      className="p-2 rounded-full border border-red-200 text-red-500 bg-white hover:bg-red-50 hover:shadow-sm transition"
+                      title="Hapus"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+
+                    {/* Lihat Gambar */}
+                    <button
+                      onClick={() => {
+                        setImageFacility(r);
+                        setShowImageModal(true);
+                      }}
+                      className="p-2 rounded-full border border-gray-200 text-gray-600 bg-white hover:bg-gray-50 hover:shadow-sm transition"
+                      title="Lihat Gambar"
+                    >
+                      <Image size={18} />
+                    </button>
+                  </div>
+                </td>
+
+
 
               </tr>
             ))}

@@ -1,10 +1,44 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Facility, FacilityUpdate } from "@/app/facility/models";
 import http from "@/utils/http";
 
-export async function getFacilities(): Promise<Facility[]> {
+// export async function getFacilities(): Promise<Facility[]> {
+//   const res = await http.get("/facility");
+//   return res.data.data; // sesuaikan sama struktur response backend
+// }
+
+export async function getFacilities() {
+  try {
   const res = await http.get("/facility");
-  return res.data.data; // sesuaikan sama struktur response backend
+    return res.data;
+  } catch (error: any) {
+    // Kalau pakai axios, biasanya response error ada di error.response.data
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal update customer";
+
+    // Lempar error biar ditangkap di handleSubmit
+    throw new Error(message);
+  }
 }
+
+export async function DeletedFacility(_id: string) {
+  try {
+  const res = await http.delete(`/facility/${_id}`);
+    return res.data.data;
+  } catch (error: any) {
+    // Kalau pakai axios, biasanya response error ada di error.response.data
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal update customer";
+
+    // Lempar error biar ditangkap di handleSubmit
+    throw new Error(message);
+  }
+}
+
 
 export async function addFacility(data: Facility) {
   const res = await http.post("/facility", data);

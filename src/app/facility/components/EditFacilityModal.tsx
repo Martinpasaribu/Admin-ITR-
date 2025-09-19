@@ -121,7 +121,7 @@ export default function EditFacilityModal({ show, onClose, facility }: Props) {
           className="w-full border rounded-lg p-2 mb-3 bg-gray-50"
         />
 
-        <label className="block text-sm mb-1">Qty</label>
+        <label className="block text-sm mb-1">Jumlah Barang</label>
         <input
           type="number"
           name="qty"

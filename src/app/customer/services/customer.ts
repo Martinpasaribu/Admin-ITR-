@@ -4,7 +4,7 @@
 import http from "@/utils/http";
 
 export async function getCustomers() {
-  const res = await http.get("/customers");
+  const res = await http.get("/management-customer");
   return res.data.data;
 }
 
@@ -60,9 +60,20 @@ export async function updateCustomer(id: string, payload: any) {
 }
 
 
-export async function updateStatusBooking(id: string, status: string) {
-  const res = await http.patch(`/management-customer/status/${id}`, { status });
-  return res.data.data; // balikin data updated
+export async function updateStatusBooking (id: string, status: string, roomId: string) {
+  try {
+      const res = await http.patch(`/management-customer/status/${id}`, { status, roomId });
+    return res.data;
+  } catch (error: any) {
+    // Kalau pakai axios, biasanya response error ada di error.response.data
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal update booking";
+
+    // Lempar error biar ditangkap di handleSubmit
+    throw new Error(message);
+  }
 }
 
 

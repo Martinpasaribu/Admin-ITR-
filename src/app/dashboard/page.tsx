@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/dashboard/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { User, Settings, LogOut, FileText, BarChart3, Users, DollarSign, BedSingle, Package } from "lucide-react";
 import { getDashboardInfo } from "./services/service_dashboard";
 import { Dashboard } from "./models";
+import { authService } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastContect";
 
 export default function DashboardPage() {
   const [userName] = useState("Admin");
@@ -14,22 +18,58 @@ const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [totalReports] = useState(3); // Dummy jumlah laporan
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>();
+
+  const { showToast } = useToast();
+  const router = useRouter();
+
+  const fetchData = useCallback(async () => {
+      
+      setLoading(true);
+
+      try {
+        
+        const isValid = await authService.checkSession();
+
+        if (!isValid) {
+          router.push("/login?session=expired");
+          return;
+        }
+  
+        const profile = await authService.fetchProfile();
+        if (profile?.username) {
+          setUser(profile);
+        }
+
+        const res = await getDashboardInfo()
+
+        if (res) {
+          setDashboard(res);
+         }
+
+      } catch (error) {
+        showToast("error", `Gagal mengambil data: ${error}`);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }, [router, showToast]);
 
     useEffect(() => {
-      setLoading(true);
-      getDashboardInfo()
-        .then((data) => {
-          setDashboard(data);
-          setError(null);
-          // console.log(data)/];
-        })
-        .catch((err) => {
-          console.error("Error fetch fasilitas:", err);
-          setError("Gagal memuat data fasilitas");
-        })
-        .finally(() => setLoading(false));
-    }, []);
-  
+      fetchData();
+    }, [fetchData]);
+    
+
+
+
+    const handleLogout = async () => {
+      try {
+        await authService.logout();
+        router.push("/login"); // Redirect ke halaman login setelah berhasil logout
+      } catch (error) {
+        console.error("Logout gagal:", error);
+      }
+    };
     
   return (
     <main className="min-h-screen bg-gray-50 p-6">
@@ -41,19 +81,19 @@ const [dashboard, setDashboard] = useState<Dashboard | null>(null);
             <Settings size={20} className="text-gray-700" />
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-full transition">
-            <LogOut size={20} className="text-gray-700" />
+            <LogOut onClick={handleLogout} size={20} className="text-gray-700" />
           </button>
         </div>
       </header>
 
       {/* Greeting */}
-      <section className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-xl shadow p-6 mb-8">
+      <section className="bg-gradient-to-br from-indigo-700 to-indigo-800 text-white rounded-xl shadow p-6 mb-8">
         <div className="flex items-center gap-4">
           <div className="bg-white text-indigo-600 p-3 rounded-full shadow-inner">
             <User size={28} />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Halo, {userName} 👋</h2>
+            <h2 className="text-lg font-semibold">Halo, {user?.username} </h2>
             <p className="text-sm opacity-90">
               Senang melihat Anda kembali. Semoga harimu menyenangkan!
             </p>

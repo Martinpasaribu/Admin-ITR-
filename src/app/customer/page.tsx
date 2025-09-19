@@ -13,6 +13,8 @@ import { useToast } from "@/components/ToastContect";
 import { FormatDateTime } from "@/utils/Format/date";
 import ConfirmDeleteModal from "@/components/ConfirmDeletedModal";
 import { Trash2 } from "lucide-react";
+import LoadingSpinner from "@/components/Loading";
+import { div } from "framer-motion/client";
 
 export default function CustomerPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -64,15 +66,16 @@ export default function CustomerPage() {
     }
   };
 
-  const handleUpdateStatus = async (code: string, newStatus: CustomerClient["booking_status"]) => {
+  const handleUpdateStatus = async (code: string, newStatus: CustomerClient["booking_status"], roomId: string) => {
     try {
-      const updated = await updateStatusBooking(code, newStatus);
-      setCustomers((prev) =>
-        prev.map((f) => (f._id === code ? { ...f, booking_status: updated.booking_status } : f))
-      );
-    } catch (err) {
-      console.error("Gagal update status:", err);
-      alert("❌ Gagal update status");
+     
+      await updateStatusBooking(code, newStatus, roomId);
+
+      await fetchCustomers()
+
+      showToast("success", "Berhasil update status booking");
+    } catch (error: any) {
+        showToast("error", error.message);
     }
   };
 
@@ -94,17 +97,6 @@ export default function CustomerPage() {
   };
 
 
-  // Skeleton loader component
-  const SkeletonRow = () => (
-    <tr className="animate-pulse border-t">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <td key={i} className="px-4 py-2">
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-        </td>
-      ))}
-    </tr>
-  );
-
   return (
     <div className="min-h-screen p-6">
       <div className="flex justify-between items-center mb-4">
@@ -117,54 +109,85 @@ export default function CustomerPage() {
         </button>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
-        <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-gray-100 text-gray-800">
-            <tr>
-              <th className="px-4 py-2">User ID</th>
-              <th className="px-4 py-2">Username</th>
-              <th className="px-4 py-2">NIK</th>
-              <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Phone</th>
-              <th className="px-4 py-2">Tanggal Masuk</th>
-              <th className="px-4 py-2">Status Bill</th>
-              <th className="px-4 py-2">No Kamar</th>
-              <th className="px-4 py-2">Status Book</th>
-              <th className="px-4 py-2">Aksi</th>
+      <div className="overflow-x-auto bg-white rounded-xl shadow-md mt-10">
+        <table className="w-full text-sm text-gray-700">
+          <thead>
+            <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+              <th className="px-4 py-3 text-left">User ID</th>
+              <th className="px-4 py-3 text-left">Username</th>
+              <th className="px-4 py-3 text-left">NIK</th>
+              <th className="px-4 py-3 text-left">Email</th>
+              <th className="px-4 py-3 text-left">Phone</th>
+              <th className="px-4 py-3 text-left">Tanggal Masuk</th>
+              <th className="px-4 py-3 text-center">Status Bill</th>
+              <th className="px-4 py-3 text-center">No Kamar</th>
+              <th className="px-4 py-3 text-center">Status Book</th>
+              <th className="px-4 py-3 text-center">Aksi</th>
             </tr>
           </thead>
+          
           <tbody>
             {loading ? (
-              // tampilkan skeleton saat loading
-              <>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonRow key={i} />
-                ))}
-              </>
+              <tr>
+                <td colSpan={10} className="py-10">
+                  <div className="flex justify-center items-center">
+                    <LoadingSpinner />
+                  </div>
+                </td>
+              </tr>
             ) : customers.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center py-4 text-gray-500">
+                <td colSpan={10} className="text-center py-6 text-gray-500">
                   Belum ada customer.
                 </td>
               </tr>
             ) : (
-              customers.map((c) => (
-                <tr key={c._id} className="border-t">
-                  <td className="px-4 py-2">{c.user_id}</td>
-                  <td className="px-4 py-2">{c.username}</td>
-                  <td className="px-4 py-2">{c.nik}</td>
-                  <td className="px-4 py-2">{c.email}</td>
-                  <td className="px-4 py-2">{c.phone}</td>
-                  <td className="px-4 py-2">{FormatDateTime(c.checkIn)}</td>
-                  <td className="px-4 py-2 capitalize ">
-                    <p className="mx-2">{c.bill_status}</p>
+              customers.map((c, idx) => (
+                <tr
+                  key={c._id}
+                  className={`${
+                    idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-t hover:bg-gray-100 transition`}
+                >
+                  <td className="px-4 py-3 font-medium">{c.user_id}</td>
+                  <td className="px-4 py-3">{c.username}</td>
+                  <td className="px-4 py-3">{c.nik}</td>
+                  <td className="px-4 py-3">{c.email}</td>
+                  <td className="px-4 py-3">{c.phone}</td>
+                  <td className="px-4 py-3">{FormatDateTime(c.checkIn)}</td>
+
+                  {/* Status Bill */}
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        c.bill_status === "lunas"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {c.bill_status}
+                    </span>
                   </td>
-                  <td className="px-4 py-2">{c.room_key.code}</td> 
-                  <td className="px-4 py-2">
+
+                  {/* No Kamar */}
+                  <td className="px-4 py-3 text-center font-medium">
+                    {c.room_key.code}
+                  </td>
+
+                  {/* Status Book */}
+                  <td className="px-4 py-3 text-center">
                     <select
                       value={c.booking_status}
-                      onChange={(e) => handleUpdateStatus(c._id, e.target.value as CustomerClient["booking_status"])}
-                      className={`border rounded p-1 ${StatusBooking(c.booking_status).className}`}
+                      onChange={(e) =>
+                        handleUpdateStatus(
+                          c._id,
+                          e.target.value as CustomerClient["booking_status"],
+                          c.room_key?._id,
+                        )
+                      }
+                      className={`px-2 py-1 rounded-md border text-sm ${StatusBooking(
+                        c.booking_status
+                      ).className}`}
                     >
                       <option value="M">Masuk</option>
                       <option value="K">Keluar</option>
@@ -172,30 +195,39 @@ export default function CustomerPage() {
                       <option value="AK">Pengajuan Keluar</option>
                     </select>
                   </td>
-                  <td className="flex justify-center items-center mt-2 ">
-                    <button
-                      onClick={() => {
-                        setEditData(c);
-                        setShowEditModal(true);
-                      }}
-                      className="px-3 py-1 bg-gray-900 text-white rounded hover:bg-gray-950"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={() => setDeleteId({ _id: c._id, room_id: c.room_key._id })}
-                      className="px-3 py-1 text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 />
-                    </button>
 
+                  {/* Aksi */}
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditData(c);
+                          setShowEditModal(true);
+                        }}
+                        className="p-2 rounded-full border border-indigo-200 text-indigo-600 bg-white hover:bg-indigo-50 hover:shadow-sm transition"
+                        title="Update Customer"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() =>
+                          setDeleteId({ _id: c._id, room_id: c.room_key._id })
+                        }
+                        className="p-2 rounded-full border border-red-200 text-red-600 bg-white hover:bg-red-50 hover:shadow-sm transition"
+                        title="Hapus Customer"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
+
         </table>
       </div>
+
 
       {/* Modal */}
       <ConfirmDeleteModal

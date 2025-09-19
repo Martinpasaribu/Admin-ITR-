@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { Customer, CustomerClient } from "../models";
 import { Room } from "@/app/room/models";
+import { Eye, EyeOff } from "lucide-react";
+// eslint-disable-next-line react-hooks/rules-of-hooks
+
 
 interface Props {
   show: boolean;
@@ -14,21 +17,22 @@ interface Props {
 export default function AddCustomerModal({ show, onClose, onSave, rooms }: Props) {
   
   const [room, setRoom] = useState<Room[]>([])
+  const [showPassword, setShowPassword] = useState(false);
 
 
-useEffect(() => {
-  if (rooms && rooms.length > 0) {
-    setRoom(rooms);
+  useEffect(() => {
+    if (rooms && rooms.length > 0) {
+      setRoom(rooms);
 
-    // Set default room_key ke room pertama
-    setForm((prev) => ({
-      ...prev,
-      room_key: rooms[0]._id
-    }));
+      // Set default room_key ke room pertama
+      setForm((prev) => ({
+        ...prev,
+        room_key: rooms[0]._id
+      }));
 
-    console.log('data room', rooms)
-  }
-}, [rooms]);
+      console.log('data room', rooms)
+    }
+  }, [rooms]);
 
 
   const [form, setForm] = useState<CustomerClient>({
@@ -78,13 +82,32 @@ useEffect(() => {
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
         />
-        <input
-          type="password"
+        {/* <input
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           className="w-full border rounded-lg p-2 mb-3"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+        /> */}
+        
+        <div className="mb-6 relative">
+
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-[.7rem] text-gray-500 hover:text-gray-700"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+
         <input
           type="email"
           placeholder="Email"

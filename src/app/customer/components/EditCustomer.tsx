@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CustomerClient, Customer } from "../models";
 import { updateCustomer } from "../services/customer";
 import { useToast } from "@/components/ToastContect";
+import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
   show: boolean;
@@ -15,7 +16,9 @@ interface Props {
 }
 
 export default function EditCustomerModal({ show, onClose, customer, rooms, onUpdated }: Props) {
+
   const { showToast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState<CustomerClient>({
     ...customer,
@@ -57,13 +60,24 @@ const handleSubmit = async () => {
         />
 
         {/* ⚡ password selalu kosong, hanya isi kalau mau ganti */}
-        <input
-          type="password"
-          className="w-full border rounded-lg p-2 mb-3"
-          value={form.password}
-          placeholder="Password baru"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+
+        <div className="mb-6 relative">
+
+          <input
+            type={showPassword ? "text" : "password"}
+            value={form.password}
+            placeholder="Password baru"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-[.7rem] text-gray-500 hover:text-gray-700"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
 
         <input
           type="email"

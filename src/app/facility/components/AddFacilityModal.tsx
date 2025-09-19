@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Facility } from "../models";
+import { Facility, FacilityMappingAdd } from "../models";
 import { addFacility } from "../services/service_facility";
 
 interface Props {
@@ -40,7 +40,7 @@ export default function AddFacilityModal({ show, onClose, onAdded }: Props) {
     setLoading(true);
     setMessage("");
     try {
-      const payload: Facility = {
+      const payload: FacilityMappingAdd = {
         ...form,
         qty: Number(form.qty),
         price: Number(form.price),

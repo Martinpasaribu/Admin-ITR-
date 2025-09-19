@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Facility, FacilityUpdate } from "@/app/facility/models";
+import { Facility, FacilityMappingAdd, FacilityUpdate } from "@/app/facility/models";
 import http from "@/utils/http";
 
 // export async function getFacilities(): Promise<Facility[]> {
@@ -40,7 +40,7 @@ export async function DeletedFacility(_id: string) {
 }
 
 
-export async function addFacility(data: Facility) {
+export async function addFacility(data: FacilityMappingAdd) {
   const res = await http.post("/facility", data);
   return res.data.data;
 }

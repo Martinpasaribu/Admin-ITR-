@@ -2,9 +2,10 @@
 
 import { Report } from "../models";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, Image } from "lucide-react";
 import { FormatDate } from "../utils/Date";
 import { CalculateProgressDuration } from "../utils/TimeProgress";
+import { useState } from "react";
 
 interface Props {
   reports: Report[];
@@ -13,6 +14,10 @@ interface Props {
 }
 
 export default function ReportTable({ reports, onEdit, onDelete }: Props) {
+
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  
+
   return (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
       <table className="w-full text-sm text-left text-gray-700">
@@ -48,6 +53,22 @@ export default function ReportTable({ reports, onEdit, onDelete }: Props) {
                   {Progress(r.progress).label}
                 </span>
               </td>
+
+              <td className="px-6 py-4">
+
+                  {r.image ? (
+                    <p
+                      onClick={() => setPreviewImage(r.image)} // ✅ trigger preview image
+                      className="flex justify-center mt-1 text-sm font-semibold text-gray-900 cursor-pointer"
+                    >
+                      <Image size={20} className="text-gray-500 hover:text-gray-700 transition" />
+                    </p>
+                  ) : (
+                    <span className="text-xs text-gray-400 italic">Tidak ada</span>
+                  )}
+
+              </td>
+
               <td className="px-4 py-2">{FormatDate(r.createdAt, "/")}</td>
               <td className="px-4 py-2">
                 {r.progress_end
@@ -72,6 +93,27 @@ export default function ReportTable({ reports, onEdit, onDelete }: Props) {
           ))}
         </tbody>
       </table>
+
+            {/* 🔹 Preview Image Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="max-w-[90%] max-h-[90%] rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-105"
+          />
+          <button
+            onClick={() => setPreviewImage(null)}
+            className="absolute top-6 right-6 text-white bg-black/50 hover:bg-black/70 p-2 px-3 rounded-full transition"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

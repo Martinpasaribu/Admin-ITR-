@@ -1,10 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Report } from "../models";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, Image } from "lucide-react";
 import { FormatDate } from "../utils/Date";
 import { CalculateProgressDuration } from "../utils/TimeProgress";
+import { useState } from "react";
 
 interface Props {
   report: Report;
@@ -13,6 +15,10 @@ interface Props {
 }
 
 export default function ReportCard({ report, onEdit, onDelete }: Props) {
+
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+
   return (
     <div className="relative group bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition">
       <div className="space-y-1">
@@ -109,6 +115,25 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
 
           </div>
 
+            <div className="flex flex-col gap-1">
+
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Gambar
+                </p>
+                {report.image ? (
+                  <p
+                    onClick={() => setPreviewImage(report.image)} // ✅ trigger preview image
+                    className="flex justify-center mt-1 text-sm font-semibold text-gray-900 cursor-pointer"
+                  >
+                    <Image size={20} className="text-gray-500 hover:text-gray-700 transition" />
+                  </p>
+                ) : (
+                  <span className="text-xs text-gray-400 italic">Tidak ada</span>
+                )}
+              </div>
+            </div>
+
 
         </div>
 
@@ -143,6 +168,27 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
           <Trash2 size={16} />
         </button>
       </div>
+
+      {/* 🔹 Preview Image Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="max-w-[90%] max-h-[90%] rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-105"
+          />
+          <button
+            onClick={() => setPreviewImage(null)}
+            className="absolute top-6 right-6 text-white bg-black/50 hover:bg-black/70 p-2 px-3 rounded-full transition"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

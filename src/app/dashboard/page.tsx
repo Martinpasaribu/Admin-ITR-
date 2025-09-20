@@ -3,7 +3,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { User, Settings, LogOut, FileText, BarChart3, Users, DollarSign, BedSingle, Package } from "lucide-react";
+import { User, Settings, LogOut, FileText, BarChart3, Users, DollarSign, BedSingle, Package, Link } from "lucide-react";
 import { getDashboardInfo } from "./services/service_dashboard";
 import { Dashboard } from "./models";
 import { authService } from "@/lib/auth";
@@ -77,9 +77,11 @@ const [dashboard, setDashboard] = useState<Dashboard | null>(null);
       <header className="flex justify-between items-center bg-white shadow-sm rounded-xl px-6 py-4 mb-8">
         <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
         <div className="flex items-center gap-3">
-          <button className="p-2 hover:bg-gray-100 rounded-full transition">
-            <Settings size={20} className="text-gray-700" />
-          </button>
+          <Link href="/settings">
+            <button className="p-2 hover:bg-gray-100 rounded-full transition">
+              <Settings size={20} className="text-gray-700" />
+            </button>
+          </Link>
           <button className="p-2 hover:bg-gray-100 rounded-full transition">
             <LogOut onClick={handleLogout} size={20} className="text-gray-700" />
           </button>

@@ -3,12 +3,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { User, Settings, LogOut, FileText, BarChart3, Users, DollarSign, BedSingle, Package, Link } from "lucide-react";
+import { User, Settings, LogOut, FileText, BarChart3, Users, DollarSign, BedSingle, Package } from "lucide-react";
 import { getDashboardInfo } from "./services/service_dashboard";
 import { Dashboard } from "./models";
 import { authService } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastContect";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const [userName] = useState("Admin");

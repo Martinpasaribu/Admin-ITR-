@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Facility } from "@/app/facility/models";
 import http from "@/utils/http";
 import { Room } from "../models";
@@ -26,6 +27,26 @@ export async function deleteFacilityGalleryImage(code: string, images: string) {
   });
 
   return res.data.data; // samain struktur return seperti fungsi lain
+}
+
+export async function AddRoom(code: string, price : number, facility: any[] ) {
+  try {
+  const res = await http.post(`/room`, 
+  { 
+    code, price, facility 
+  }
+  );
+    return res.data.data;
+  } catch (error: any) {
+    // Kalau pakai axios, biasanya response error ada di error.response.data
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal update customer";
+
+    // Lempar error biar ditangkap di handleSubmit
+    throw new Error(message);
+  }
 }
 
 

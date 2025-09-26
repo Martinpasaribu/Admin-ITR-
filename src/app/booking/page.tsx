@@ -8,6 +8,7 @@ import { FormatDateTime } from "@/utils/Format/date";
 import { Check, Trash2, X } from "lucide-react";
 import { useToast } from "@/components/ToastContect";
 import ConfirmDeleteModal from "@/components/ConfirmDeletedModal";
+import { TypeStatus } from "./constant";
 
 
 export default function BookingListPage() {
@@ -156,34 +157,33 @@ export default function BookingListPage() {
                   <td className="px-4 py-3 capitalize">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold
-                        ${
-                          b.status === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : b.status === "confirmed"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
+                        ${TypeStatus(b.status).className}`}
                     >
-                      {b.status}
+                      {TypeStatus(b.status).label}
                     </span>
                   </td>
                   <td className="px-4 py-3 flex items-center gap-2">
-                    <button
-                      onClick={() => updateStatus(b._id, b.room_key._id, "confirmed")}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-green-600 border border-green-600 hover:bg-green-50 transition"
-                      title="Konfirmasi Booking"
-                    >
-                      <Check className="w-4 h-4" />
-                      <span className="hidden sm:inline">Konfirmasi</span>
-                    </button>
-                    <button
-                      onClick={() => updateStatus(b._id, b.room_key._id, "canceled")}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-600 border border-red-600 hover:bg-red-50 transition"
-                      title="Batalkan Booking"
-                    >
-                      <X className="w-4 h-4" />
-                      <span className="hidden sm:inline">Batalkan</span>
-                    </button>
+            
+                      <button
+                        onClick={() => updateStatus(b._id, b.room_key._id, "C")}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-green-600 border border-green-600 hover:bg-green-50 transition"
+                        title="Konfirmasi Booking"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span className="hidden sm:inline">Konfirmasi</span>
+                      </button>
+              
+                    {  b.status === "C" && ( 
+                      <button
+                        onClick={() => updateStatus(b._id, b.room_key._id, "CL")}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-600 border border-red-600 hover:bg-red-50 transition"
+                        title="Batalkan Booking"
+                      >
+                        <X className="w-4 h-4" />
+                        <span className="hidden sm:inline">Batalkan</span>
+                      </button>
+                    )}
+
                     <button
                         onClick={() =>
                           // handleDeleteBooking(b._id)

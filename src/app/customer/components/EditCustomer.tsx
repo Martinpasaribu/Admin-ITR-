@@ -11,7 +11,7 @@ interface Props {
   show: boolean;
   onClose: () => void;
   customer: Customer;
-  rooms: { _id: string; code: string }[];
+  rooms: { _id: string; code: string, status: boolean }[];
   onUpdated: () => void; // callback ke main page
 }
 
@@ -113,12 +113,19 @@ const handleSubmit = async () => {
           value={form.room_key}
           onChange={(e) => setForm({ ...form, room_key: e.target.value })}
         >
-          {rooms.map((r) => (
-            <option key={r._id} value={r._id}>
-              {r.code}
-            </option>
-          ))}
+        {rooms.map((r) => (
+          <option
+            key={r.code}
+            value={r._id}
+            disabled={!r.status} // kalau status false, option disable
+            className={!r.status ? "text-gray-400" : ""}
+          >
+            Room {r.code} {!r.status && "( Habis )"}
+          </option>
+        ))}
+
         </select>
+
 
         {/* <select
           className="w-full border rounded-lg p-2 mb-4"

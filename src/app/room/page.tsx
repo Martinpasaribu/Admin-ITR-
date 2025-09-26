@@ -12,6 +12,8 @@ import { Facility, Room } from "./models";
 import ModalFacility from "./components/FacilityModal";
 import { Image } from "lucide-react";
 import RoomImageModal from "./components/AddImageModal";
+import { AddRoom } from "./services/service_room";
+import http from "@/utils/http";
 
 export default function RoomPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -50,7 +52,7 @@ export default function RoomPage() {
     facility: Facility[]
   ) => {
     try {
-      await api.post("/api/v1/room", { code, price, facility });
+      await AddRoom(code, price, facility)
       showToast("success", "Berhasil tambah kamar");
       fetchRooms();
     } catch (err: any) {
@@ -73,7 +75,7 @@ export default function RoomPage() {
 
   const handleOpenFacilityModal = async (roomId: string) => {
     try {
-      const res = await api.get(`/api/v1/room/${roomId}/facility`);
+      const res = await http.get(`/room/${roomId}/facility`);
       setSelectedFacilities(res.data.data || []);
       setSelectedRoomId(roomId);
       setFacilityModalOpen(true);

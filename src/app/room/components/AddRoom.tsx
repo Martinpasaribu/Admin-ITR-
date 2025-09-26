@@ -5,7 +5,6 @@ import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import { Facility } from "../models";
 
-
 interface AddRoomFormProps {
   onAdd: (code: string, price: number, facility: Facility[]) => Promise<void>;
   loading?: boolean;
@@ -24,20 +23,28 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
   const [harga, setHarga] = useState<number | "">("");
 
   // Pilihan fasilitas (ambil dari defaultFacilities)
-  const [selectedFacilityCode, setSelectedFacilityCode] = useState(defaultFacilities[0].code);
-  const [facilityStatus, setFacilityStatus] = useState<Facility["status"]>("B");
+  const [selectedFacilityCode, setSelectedFacilityCode] = useState(
+    defaultFacilities[0].code
+  );
+  const [facilityStatus, setFacilityStatus] =
+    useState<Facility["status"]>("B");
   const [facilities, setFacilities] = useState<Facility[]>([]);
 
   const { showToast } = useToast();
 
   const handleAddFacility = () => {
+    const facilityCode = selectedFacilityCode.toUpperCase();
+    const status = facilityStatus.toUpperCase() as Facility["status"];
+
     // Cek apakah sudah ada facility dengan code yang sama
-    if (facilities.some((f) => f.code === selectedFacilityCode)) {
+    if (facilities.some((f) => f.code === facilityCode)) {
       showToast("warning", "Fasilitas sudah ada di daftar");
       return;
     }
 
-    const facilityInfo = defaultFacilities.find((f) => f.code === selectedFacilityCode);
+    const facilityInfo = defaultFacilities.find(
+      (f) => f.code === facilityCode
+    );
     if (!facilityInfo) {
       showToast("error", "Fasilitas tidak ditemukan");
       return;
@@ -46,9 +53,9 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
     setFacilities((prev) => [
       ...prev,
       {
-        code: facilityInfo.code,
-        name: facilityInfo.name,
-        status: facilityStatus,
+        code: facilityInfo.code.toUpperCase(),
+        name: facilityInfo.name.toUpperCase(),
+        status,
       },
     ]);
   };
@@ -65,15 +72,14 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
       return;
     }
 
-    if (!/^([KH])\d{1,2}$/i.test(kode.trim())) {
-      showToast(
-        "warning",
-        "Kode harus diawali K atau H dan diikuti angka, contoh: K01, H12"
-      );
-      return;
-    }
+    // simpan semua dalam uppercase
+    const formattedFacilities = facilities.map((f) => ({
+      code: f.code.toUpperCase(),
+      name: f.name.toUpperCase(),
+      status: f.status.toUpperCase() as Facility["status"],
+    }));
 
-    await onAdd(kode.toUpperCase().trim(), Number(harga), facilities);
+    await onAdd(kode.toUpperCase().trim(), Number(harga), formattedFacilities);
 
     setKode("");
     setHarga("");
@@ -91,7 +97,7 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
           <input
             type="text"
             placeholder="Kode room (Kxx atau Hxx)"
-            maxLength={3}
+            maxLength={4}
             value={kode}
             onChange={(e) => setKode(e.target.value.toUpperCase())}
             className="border rounded px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -114,7 +120,7 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
             className="flex justify-center items-center gap-2 bg-gray-800 text-white rounded px-6 py-2 hover:bg-gray-950 transition disabled:opacity-50"
             disabled={loading}
           >
-             <Plus />Tambah
+            <Plus /> Tambah
           </button>
         </div>
 
@@ -124,7 +130,9 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
           <div className="flex flex-wrap gap-2 items-center">
             <select
               value={selectedFacilityCode}
-              onChange={(e) => setSelectedFacilityCode(e.target.value)}
+              onChange={(e) =>
+                setSelectedFacilityCode(e.target.value.toUpperCase())
+              }
               className="border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={loading}
             >
@@ -138,15 +146,15 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
             <select
               value={facilityStatus}
               onChange={(e) =>
-                setFacilityStatus(e.target.value as Facility["status"])
+                setFacilityStatus(e.target.value.toUpperCase() as Facility["status"])
               }
               className="border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={loading}
             >
-              <option value="B">Baik</option>
-              <option value="P">Perlu Perbaikan</option>
-              <option value="R">Rusak</option>
-              <option value="T">Tidak sedang digunakan</option>
+              <option value="B">BAIK</option>
+              <option value="P">PERLU PERBAIKAN</option>
+              <option value="R">RUSAK</option>
+              <option value="T">TIDAK SEDANG DIGUNAKAN</option>
             </select>
 
             <button

@@ -2,11 +2,12 @@
 // pages/register.tsx
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useToast } from "@/components/ToastContect";
+import { authService } from "@/lib/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,8 +21,41 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-   const { showToast } = useToast();
+  const { showToast } = useToast();
    
+  const fetchMe = useCallback(async () => {
+      
+      setLoading(true);
+
+      try {
+        
+        const isValid = await authService.checkSession();
+
+        const profile = await authService.fetchProfile();
+
+        if (profile?.role !== 'SA') {
+          // router.push("/login?session=expired");
+          router.push("/settings");
+          return;
+        }
+
+        if (!isValid ) {
+          router.push("/settings");
+          return;
+        }
+
+      } catch (error) {
+        showToast("error", `Gagal mengambil data: ${error}`);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }, [router, showToast]);
+    
+  useEffect(() => {
+    fetchMe();
+  }, [fetchMe]);
+  
   const handleRegister = async () => {
     if (!form.user_id || !form.email || !form.password) {
       showToast("warning", `Semua field wajib diisi!`);

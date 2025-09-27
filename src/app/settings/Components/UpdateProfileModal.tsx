@@ -104,17 +104,20 @@ export default function UpdateProfileModal({ isOpen, onClose, update, users }: U
           className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none"
         />
 
-        <select
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-          className="w-full border rounded-lg p-2"
-        >
-          <option value="">Pilih Role</option>
-          <option value="A">Admin</option>
-          <option value="CA">Co Admin</option>
-          <option value="SA">Super Admin</option>
-        </select>
 
+        {users?.role ==='SA' && (
+          <select
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+            className="w-full border rounded-lg p-2"
+          >
+            <option value="">Pilih Role</option>
+            <option value="A">Admin</option>
+            <option value="CA">Co Admin</option>
+            <option value="SA">Super Admin</option>
+          </select>
+          )}
+          
         <button
           type="submit"
           disabled={loading}

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import RegisterAdminModal from "./Components/RegisterAdminModal";
 import AdminListModal from "./Components/AdminListModal";
 import UpdateProfileModal from "./Components/UpdateProfileModal";
-import { Plus, List, Edit2, Zap } from "lucide-react";
+import { Plus, List, Edit2, Zap, MailCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
 import { useToast } from "@/components/ToastContect";
@@ -125,6 +125,13 @@ export default function SettingsPage() {
         </div>
 
         {/* Action Buttons */}
+        <div className="flex flex-col ">
+
+          <div className="h-[3.5rem]">
+                <h1 className="text-lg font-bold text-slate-900"> Aksi</h1>
+          </div>
+
+        {/* Action Buttons */}
         <div className="flex flex-col gap-4 w-full md:w-64">
           {/* <button
             onClick={() => setModalState("register")}
@@ -133,19 +140,34 @@ export default function SettingsPage() {
             <Plus size={18} />
             Register Admin
           </button> */}
-          <Link href={'register'}
-            className="flex items-center justify-center gap-2 w-full bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-700 transition"
-          >
-            <Plus size={18} />
-            Register Admin
-          </Link>
-          <button
-            onClick={() => setModalState("list")}
-            className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
-          >
-            <List size={18} />
-            View Admins
-          </button>
+        {profile?.role ==='SA' && (
+
+          <div className="space-y-3">
+
+            <Link href={'register'}
+              className="flex items-center justify-center gap-2 w-full bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-700 transition"
+            >
+              <Plus size={18} />
+              Register Admin
+            </Link>
+            <button
+              onClick={() => setModalState("list")}
+              className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
+            >
+              <List size={18} />
+              View Admins
+            </button>
+
+            <Link href={'settings/contact-manage'}
+              className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
+            >
+              <MailCheck size={18} />
+
+              Message
+            </Link>
+            </div>
+          )}
+
           <button
             onClick={() => setModalState("update")}
             className="flex items-center justify-center gap-2 w-full bg-green-500 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-green-600 transition"
@@ -153,6 +175,8 @@ export default function SettingsPage() {
             <Edit2 size={18} />
             Update Profile
           </button>
+
+        </div>
         </div>
       </div>
 

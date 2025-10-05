@@ -26,7 +26,21 @@ export interface Customer {
 
 export interface CustomerClient {
   // _id: string;
-  user_id:string;
+  username: string;
+  nik: number | 0;
+  password: string;
+  email: string;
+  phone: number;
+  role: string;
+  checkIn: string;
+  bill_status: "lunas" | "belum_lunas" | "pembayaran";
+  room_key:  string | number | readonly string[] | string [];
+  // booking_status: "M" | "K" | "P" | "AK";
+  booking_status: string
+}
+export interface CustomerClientEdit {
+  // _id: string;
+  user_id: string;
   username: string;
   nik: number | 0;
   password: string;

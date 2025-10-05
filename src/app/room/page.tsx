@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MonitorCheck, Settings, LogOut, Home, Trash2, Eye } from "lucide-react";
+import { MonitorCheck, Settings, LogOut, Home, Trash2, Eye, Edit } from "lucide-react";
 import api from "@/lib/api";
 import AddRoomForm from "./components/AddRoom";
 import { useToast } from "@/components/ToastContect";
@@ -14,6 +14,7 @@ import { Image } from "lucide-react";
 import RoomImageModal from "./components/AddImageModal";
 import { AddRoom } from "./services/service_room";
 import http from "@/utils/http";
+import UpdateRoomModal from "./components/EditRoomModal";
 
 export default function RoomPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -23,7 +24,9 @@ export default function RoomPage() {
   const { showToast } = useToast();
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [selectId, setSelectId] = useState<string | null>(null);
   const [facilityModalOpen, setFacilityModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedFacilities, setSelectedFacilities] = useState<Facility[]>([]);
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [imageFacility, setImageFacility] = useState<Room | null>(null);
@@ -47,12 +50,13 @@ export default function RoomPage() {
   }, []);
 
   const handleAddRoom = async (
+    name:string,
     code: string,
     price: number,
     facility: Facility[]
   ) => {
     try {
-      await AddRoom(code, price, facility)
+      await AddRoom(name, code, price, facility)
       showToast("success", "Berhasil tambah kamar");
       fetchRooms();
     } catch (err: any) {
@@ -63,7 +67,7 @@ export default function RoomPage() {
   const handleDeleteRoom = async () => {
     if (!deleteId) return;
     try {
-      await api.delete(`/api/v1/room/${deleteId}`);
+      await api.delete(`/room/${deleteId}`);
       showToast("success", "Berhasil menghapus kamar");
       setRooms((prev) => prev.filter((r) => r._id !== deleteId));
       setDeleteId(null);
@@ -84,6 +88,12 @@ export default function RoomPage() {
     }
   };
 
+  const handleOpenUpdateModal = async (roomId: string) => {
+      setSelectId(roomId);
+      setUpdateModalOpen(true);
+
+  };
+
   // Update status facility di backend + frontend
   const handleUpdateFacilityStatus = async (
     facilityCode: string,
@@ -92,7 +102,7 @@ export default function RoomPage() {
     if (!selectedRoomId) return;
     try {
       await api.patch(
-        `/api/v1/room/${selectedRoomId}/facility/${facilityCode}`,
+        `/room/${selectedRoomId}/facility/${facilityCode}`,
         { status }
       );
       handleChangeStatus(facilityCode, status);
@@ -126,7 +136,7 @@ export default function RoomPage() {
 
     try {
       const res = await api.post(
-        `/api/v1/room/${selectedRoomId}/facility`,
+        `/room/${selectedRoomId}/facility`,
         facility
       );
 
@@ -165,7 +175,8 @@ export default function RoomPage() {
         <table className="w-full text-sm text-gray-700">
           <thead>
             <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-              <th className="p-3 text-left">Kode Room</th>
+              <th className="p-3 text-left">Kode Kamar</th>
+              <th className="p-3 text-left">Nama Kamar</th>
               <th className="p-3 text-right">Harga</th>
               <th className="p-3 text-center">Status</th>
               <th className="p-3 text-center">Aksi</th>
@@ -181,6 +192,7 @@ export default function RoomPage() {
               >
                 {/* Kode Room */}
                 <td className="p-3 font-medium text-gray-900">{r.code}</td>
+                <td className="p-3 font-medium text-gray-900">{r.name}</td>
 
                 {/* Harga */}
                 <td className="p-3 text-right font-semibold text-gray-800">
@@ -210,6 +222,14 @@ export default function RoomPage() {
                       title="Lihat Fasilitas"
                     >
                       <MonitorCheck size={18} />
+                    </button>
+
+                    <button
+                      onClick={() => handleOpenUpdateModal(r._id)}
+                      className="p-2 rounded-full border border-blue-200 text-blue-600 bg-white hover:bg-blue-50 hover:shadow-sm transition"
+                      title="Edit"
+                    >
+                      <Edit size={18} />
                     </button>
 
                     {/* Hapus */}
@@ -256,6 +276,13 @@ export default function RoomPage() {
         onClose={() => setFacilityModalOpen(false)}
         onUpdate={handleUpdateFacilityStatus}
         onAdd={handleAddFacility} // 🔹 tambahkan ini
+      />
+
+      <UpdateRoomModal
+        isOpen={updateModalOpen}
+        room_id={selectId}
+        onUpdate={fetchRooms}
+        onClose={() => setUpdateModalOpen(false)}
       />
 
     {imageFacility && (

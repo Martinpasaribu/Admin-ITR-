@@ -2,8 +2,52 @@
 import { Facility } from "@/app/facility/models";
 import http from "@/utils/http";
 import { Room } from "../models";
+import api from "@/lib/api";
 
 
+// ✅ Ambil room berdasarkan ID
+export async function fetchRoomById(id: string): Promise<Room | null> {
+  try {
+    const res = await api.get(`/room/update${id}`);
+
+    if (!res.data || !res.data.data) {
+      throw new Error("Data room tidak ditemukan");
+    }
+
+    return res.data.data;
+  } catch (error: any) {
+    console.error("❌ Gagal fetchRoomById:", error.response?.data || error.message);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal update customer";
+
+    // Lempar error biar ditangkap di handleSubmit
+    throw new Error(message);
+  }
+}
+
+// ✅ Update data room
+export async function updateRoom(id: string, payload: any) {
+  try {
+    const res = await api.put(`/room/${id}`, payload);
+
+    if (!res.data.success) {
+      throw new Error(res.data.message || "Update room gagal.");
+    }
+
+    return res.data;
+  } catch (error: any) {
+    console.error("❌ Gagal updateRoom:", error.response?.data || error.message);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal update customer";
+
+    // Lempar error biar ditangkap di handleSubmit
+    throw new Error(message);
+  }
+}
 /**
  * Tambah 1 gambar ke gallery (field: images[])
  */
@@ -29,11 +73,11 @@ export async function deleteFacilityGalleryImage(code: string, images: string) {
   return res.data.data; // samain struktur return seperti fungsi lain
 }
 
-export async function AddRoom(code: string, price : number, facility: any[] ) {
+export async function AddRoom(name:string, code: string, price : number, facility: any[] ) {
   try {
   const res = await http.post(`/room`, 
   { 
-    code, price, facility 
+    name, code, price, facility 
   }
   );
     return res.data.data;

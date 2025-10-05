@@ -23,38 +23,38 @@ export default function RegisterPage() {
 
   const { showToast } = useToast();
    
-  const fetchMe = useCallback(async () => {
+  // const fetchMe = useCallback(async () => {
       
-      setLoading(true);
+  //     setLoading(true);
 
-      try {
+  //     try {
         
-        const isValid = await authService.checkSession();
+  //       const isValid = await authService.checkSession();
 
-        const profile = await authService.fetchProfile();
+  //       const profile = await authService.fetchProfile();
 
-        if (profile?.role !== 'SA') {
-          // router.push("/login?session=expired");
-          router.push("/settings");
-          return;
-        }
+  //       if (profile?.role !== 'SA') {
+  //         // router.push("/login?session=expired");
+  //         router.push("/settings");
+  //         return;
+  //       }
 
-        if (!isValid ) {
-          router.push("/settings");
-          return;
-        }
+  //       if (!isValid ) {
+  //         router.push("/settings");
+  //         return;
+  //       }
 
-      } catch (error) {
-        showToast("error", `Gagal mengambil data: ${error}`);
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }, [router, showToast]);
+  //     } catch (error) {
+  //       showToast("error", `Gagal mengambil data: ${error}`);
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }, [router, showToast]);
     
-  useEffect(() => {
-    fetchMe();
-  }, [fetchMe]);
+  // useEffect(() => {
+  //   fetchMe();
+  // }, [fetchMe]);
   
   const handleRegister = async () => {
     if (!form.user_id || !form.email || !form.password) {

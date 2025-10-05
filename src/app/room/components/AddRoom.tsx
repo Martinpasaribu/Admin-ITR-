@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Facility } from "../models";
 
 interface AddRoomFormProps {
-  onAdd: (code: string, price: number, facility: Facility[]) => Promise<void>;
+  onAdd: (name: string, code: string, price: number, facility: Facility[]) => Promise<void>;
   loading?: boolean;
 }
 
@@ -19,15 +19,11 @@ const defaultFacilities = [
 ];
 
 export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
+  const [name, setName] = useState("");
   const [kode, setKode] = useState("");
   const [harga, setHarga] = useState<number | "">("");
-
-  // Pilihan fasilitas (ambil dari defaultFacilities)
-  const [selectedFacilityCode, setSelectedFacilityCode] = useState(
-    defaultFacilities[0].code
-  );
-  const [facilityStatus, setFacilityStatus] =
-    useState<Facility["status"]>("B");
+  const [selectedFacilityCode, setSelectedFacilityCode] = useState(defaultFacilities[0].code);
+  const [facilityStatus, setFacilityStatus] = useState<Facility["status"]>("B");
   const [facilities, setFacilities] = useState<Facility[]>([]);
 
   const { showToast } = useToast();
@@ -36,15 +32,12 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
     const facilityCode = selectedFacilityCode.toUpperCase();
     const status = facilityStatus.toUpperCase() as Facility["status"];
 
-    // Cek apakah sudah ada facility dengan code yang sama
     if (facilities.some((f) => f.code === facilityCode)) {
       showToast("warning", "Fasilitas sudah ada di daftar");
       return;
     }
 
-    const facilityInfo = defaultFacilities.find(
-      (f) => f.code === facilityCode
-    );
+    const facilityInfo = defaultFacilities.find((f) => f.code === facilityCode);
     if (!facilityInfo) {
       showToast("error", "Fasilitas tidak ditemukan");
       return;
@@ -52,11 +45,7 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
 
     setFacilities((prev) => [
       ...prev,
-      {
-        code: facilityInfo.code.toUpperCase(),
-        name: facilityInfo.name.toUpperCase(),
-        status,
-      },
+      { code: facilityInfo.code.toUpperCase(), name: facilityInfo.name, status },
     ]);
   };
 
@@ -67,20 +56,20 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!kode.trim() || !harga) {
-      showToast("warning", "Kode dan harga harus diisi");
+    if (!name.trim() || !kode.trim() || !harga) {
+      showToast("warning", "Nama, kode, dan harga harus diisi");
       return;
     }
 
-    // simpan semua dalam uppercase
     const formattedFacilities = facilities.map((f) => ({
       code: f.code.toUpperCase(),
-      name: f.name.toUpperCase(),
+      name: f.name,
       status: f.status.toUpperCase() as Facility["status"],
     }));
 
-    await onAdd(kode.toUpperCase().trim(), Number(harga), formattedFacilities);
+    await onAdd(name.trim(), kode.toUpperCase().trim(), Number(harga), formattedFacilities);
 
+    setName("");
     setKode("");
     setHarga("");
     setFacilities([]);
@@ -93,10 +82,20 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Input Room Info */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input
             type="text"
-            placeholder="Kode room (Kxx atau Hxx)"
+            placeholder="Nama Kamar"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border rounded px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled={loading}
+          />
+
+          <input
+            type="text"
+            placeholder="Kode Kamar (Kxx / Hxx)"
             maxLength={4}
             value={kode}
             onChange={(e) => setKode(e.target.value.toUpperCase())}
@@ -108,31 +107,27 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
             type="number"
             placeholder="Harga (Rp)"
             value={harga}
-            onChange={(e) =>
-              setHarga(e.target.value === "" ? "" : Number(e.target.value))
-            }
+            onChange={(e) => setHarga(e.target.value === "" ? "" : Number(e.target.value))}
             className="border rounded px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={loading}
           />
 
           <button
             type="submit"
-            className="flex justify-center items-center gap-2 bg-gray-800 text-white rounded px-6 py-2 hover:bg-gray-950 transition disabled:opacity-50"
+            className="flex justify-center items-center gap-2 bg-indigo-600 text-white rounded px-6 py-2 hover:bg-indigo-700 transition disabled:opacity-50"
             disabled={loading}
           >
             <Plus /> Tambah
           </button>
         </div>
 
-        {/* Facility input */}
-        <div>
-          <h4 className="font-semibold mb-2 text-gray-700 ">Facility</h4>
+        {/* Facility Input */}
+        <div className="space-y-2">
+          <h4 className="font-semibold text-gray-700">Fasilitas</h4>
           <div className="flex flex-wrap gap-2 items-center">
             <select
               value={selectedFacilityCode}
-              onChange={(e) =>
-                setSelectedFacilityCode(e.target.value.toUpperCase())
-              }
+              onChange={(e) => setSelectedFacilityCode(e.target.value.toUpperCase())}
               className="border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={loading}
             >
@@ -154,31 +149,28 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
               <option value="B">BAIK</option>
               <option value="P">PERLU PERBAIKAN</option>
               <option value="R">RUSAK</option>
-              <option value="T">TIDAK SEDANG DIGUNAKAN</option>
+              <option value="T">TIDAK DIGUNAKAN</option>
             </select>
 
             <button
               type="button"
               onClick={handleAddFacility}
-              className="bg-gray-800 border-[1px] text-white rounded px-4 py-2 hover:bg-gray-950 transition"
+              className="bg-indigo-600 text-white rounded px-4 py-2 hover:bg-indigo-700 transition disabled:opacity-50"
               disabled={loading}
             >
-              Tambah Facility
+              Tambah
             </button>
           </div>
-        </div>
 
-        {/* List Facility */}
-        {facilities.length > 0 && (
-          <div>
-            <h4 className="font-semibold text-gray-700 mb-2">Facility</h4>
-            <ul className="space-y-2 max-h-48 overflow-y-auto">
+          {/* Facility List */}
+          {facilities.length > 0 && (
+            <ul className="mt-2 space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded p-2">
               {facilities.map((f, i) => (
                 <li
                   key={i}
-                  className="flex justify-between items-center border-[1px] border-gray-400 text-indigo-500 rounded px-4 py-2"
+                  className="flex justify-between items-center bg-gray-50 border border-gray-300 rounded px-3 py-1"
                 >
-                  <span>
+                  <span className="text-gray-700 font-medium">
                     {f.name} ({f.code}) -{" "}
                     <span
                       className={
@@ -186,7 +178,9 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
                           ? "text-green-600"
                           : f.status === "P"
                           ? "text-yellow-600"
-                          : "text-red-600"
+                          : f.status === "R"
+                          ? "text-red-600"
+                          : "text-gray-500"
                       }
                     >
                       {f.status}
@@ -195,8 +189,7 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
                   <button
                     type="button"
                     onClick={() => handleRemoveFacility(i)}
-                    className="text-gray-600 hover:text-red-800"
-                    title="Hapus facility"
+                    className="text-red-600 hover:text-red-800 font-bold"
                     disabled={loading}
                   >
                     &times;
@@ -204,8 +197,8 @@ export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          )}
+        </div>
       </form>
     </section>
   );

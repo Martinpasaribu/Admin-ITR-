@@ -33,7 +33,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // coba refresh token
       try {
-        const { data } = await axios.get(`${baseURL}auth/token`, {
+        const { data } = await axios.get(`${baseURL}/auth/token`, {
           withCredentials: true,
         });
         accessToken = data.accessToken;

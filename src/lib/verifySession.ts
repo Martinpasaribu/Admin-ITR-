@@ -5,7 +5,7 @@ export async function verifySession(req: NextRequest): Promise<boolean> {
   try {
     const cookie = req.headers.get('cookie') || ''
 
-    const res = await fetch(`${baseURL}/api/v1/auth/token`, {
+    const res = await fetch(`${baseURL}/auth/token`, {
       method: 'GET',
       headers: {
         cookie,

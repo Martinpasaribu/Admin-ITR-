@@ -11,11 +11,17 @@ interface AddRoomFormProps {
 }
 
 const defaultFacilities = [
+
   { code: "AC", name: "Air Conditioner" },
   { code: "TV", name: "Televisi" },
   { code: "WIFI", name: "WiFi" },
-  { code: "FR", name: "Kulkas" },
-  { code: "HT", name: "Hair Dryer" },
+  { code: "FR", name: "Lemari Pakai" },
+  { code: "HT", name: "Kipas Angin" },
+  { code: "TH", name: "Meja dan Kursi" },
+  { code: "HR", name: "Wastafel" },
+  { code: "YR", name: "Kamar Mandi Dalam (WC Duduk)" },
+  { code: "YP", name: "Kamar Mandi Dalam (WC Jongkok)" }
+  
 ];
 
 export default function AddRoomForm({ onAdd, loading }: AddRoomFormProps) {

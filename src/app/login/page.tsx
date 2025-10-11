@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // pages/login.tsx
 "use client";
@@ -7,6 +8,7 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { Eye, EyeOff, LogIn } from "lucide-react"; // untuk ikon lucide-react
 import { useToast } from "@/components/ToastContect";
+import CookieConsent from "@/utils/CookieConsent";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,6 +41,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-white to-indigo-50">
+
+      <CookieConsent /> {/* popup cookie muncul otomatis */}
+      
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Selamat Datang 👋

@@ -61,10 +61,13 @@ export default function CustomerPage() {
       fetchCustomers(); 
       showToast("success", "Berhasil tambah customer");
       setShowAddModal(false);
+      return true; // ✅ Tambahkan ini
     } catch (error: any) {
-      showToast("error", error.message);
+      showToast("error", error.message || "Gagal menambahkan customer");
+      return false; // ❌ Penting agar modal tidak menutup
     }
   };
+
 
   const handleUpdateStatus = async (code: string, newStatus: CustomerClient["booking_status"], roomId: string) => {
     try {
@@ -99,11 +102,11 @@ export default function CustomerPage() {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-semibold text-gray-800">Daftar Customer</h1>
+      <div className="flex  justify-between items-center mb-4">
+        <h1 className="text-md md:text-xl font-semibold text-gray-800">Daftar Customer</h1>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="text-sm md:text-md px-2 md:px-4 py-1 md:py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
         >
           + Tambah Customer
         </button>

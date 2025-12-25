@@ -8,15 +8,16 @@ import { Eye, EyeOff } from "lucide-react";
 interface Props {
   show: boolean;
   onClose: () => void;
-  onSave: (customer: CustomerClient) => void;
+  onSave: (customer: CustomerClient) => Promise<boolean> | boolean;
   rooms: Room[];
 }
 
 export default function AddCustomerModal({ show, onClose, onSave, rooms }: Props) {
   const [room, setRoom] = useState<Room[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState<CustomerClient>({
+  const defaultForm: CustomerClient = {
     username: "",
     nik: 0,
     password: "",
@@ -27,8 +28,11 @@ export default function AddCustomerModal({ show, onClose, onSave, rooms }: Props
     bill_status: "belum_lunas",
     room_key: "",
     booking_status: "M",
-  });
+  };
 
+  const [form, setForm] = useState<CustomerClient>(defaultForm);
+
+  // Set default room ketika rooms berubah
   useEffect(() => {
     if (rooms && rooms.length > 0) {
       setRoom(rooms);
@@ -39,21 +43,48 @@ export default function AddCustomerModal({ show, onClose, onSave, rooms }: Props
     }
   }, [rooms]);
 
-  const handleSubmit = () => onSave(form);
+  // Reset form ketika modal ditutup
+  useEffect(() => {
+    if (!show) {
+      setForm({
+        ...defaultForm,
+        room_key: rooms[0]?._id || "",
+      });
+      setLoading(false);
+    }
+  }, [show, rooms]);
 
+  // Handle simpan data
+  const handleSubmit = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const success = await onSave(form);
+
+      if (success) {
+        // ✅ Reset hanya jika sukses
+        setForm({
+          ...defaultForm,
+          room_key: rooms[0]?._id || "",
+        });
+        onClose();
+      }
+    } catch (err) {
+      console.error("Gagal menyimpan data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  // Handle batal
   const handleCancel = () => {
     setForm({
-      username: "",
-      nik: 0,
-      password: "",
-      email: "",
-      phone: 0,
-      role: "customer",
-      checkIn: "",
-      bill_status: "belum_lunas",
+      ...defaultForm,
       room_key: rooms[0]?._id || "",
-      booking_status: "M",
     });
+    setLoading(false);
     onClose();
   };
 
@@ -71,7 +102,7 @@ export default function AddCustomerModal({ show, onClose, onSave, rooms }: Props
           Tambah Customer
         </h2>
 
-        {/* Form Container */}
+        {/* Form */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* NIK */}
           <div>
@@ -208,14 +239,20 @@ export default function AddCustomerModal({ show, onClose, onSave, rooms }: Props
           <button
             onClick={handleCancel}
             className="px-5 py-2.5 bg-gray-100 text-gray-600 rounded-lg border hover:bg-gray-200 transition text-sm sm:text-base"
+            disabled={loading}
           >
             Batal
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm sm:text-base"
+            disabled={loading}
+            className={`px-5 py-2.5 rounded-lg text-white transition text-sm sm:text-base ${
+              loading
+                ? "bg-indigo-400 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
           >
-            Simpan
+            {loading ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </div>
